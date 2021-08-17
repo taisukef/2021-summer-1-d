@@ -65,6 +65,9 @@
                     y: String(lng),
                     data: {comment: comment.value}
                 });
+                if(data.status == "error"){
+                  alert("エラー");
+                }
             } else {
                 alert("スポットを選択してください");
             }
