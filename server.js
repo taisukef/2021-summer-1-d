@@ -8,6 +8,9 @@ const commentGet = (req) => {
     if (!x || !y){
         return { result: {}, status: "error" }
     }
+    if (db[x] == undefined || db[x][y] == undefined) {
+        return { result: {}, status: "error" }
+    }
     return { result: { x: x, y: y, data: db[x][y] }, status: "success" };
 }
 
@@ -15,6 +18,9 @@ const commentPost = (req) => {
     let x = req.x;
     let y = req.y;
     if (!x || !y){
+        return { status: "error" }
+    }
+    if(!req.data) {
         return { status: "error" }
     }
 
