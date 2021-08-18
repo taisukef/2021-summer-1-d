@@ -5,12 +5,24 @@ const db = [];
 const commentGet = (req) => {
     let x = req.x;
     let y = req.y;
-    return { result: { x: x, y: y, data: db[x][y] } };
+    if (!x || !y){
+        return { result: {}, status: "error" }
+    }
+    if (db[x] == undefined || db[x][y] == undefined) {
+        return { result: {}, status: "error" }
+    }
+    return { result: { x: x, y: y, data: db[x][y] }, status: "success" };
 }
 
 const commentPost = (req) => {
     let x = req.x;
     let y = req.y;
+    if (!x || !y){
+        return { status: "error" }
+    }
+    if(!req.data) {
+        return { status: "error" }
+    }
 
     if(!db[x]){
         db[x] = [];
@@ -19,7 +31,7 @@ const commentPost = (req) => {
         db[x][y] = [];
     }
     db[x][y].push(req.data);
-    return { result: "success" };
+    return { status: "success" };
 }
 
 class MyServer extends Server {
@@ -27,12 +39,12 @@ class MyServer extends Server {
         if (path.startsWith("/api/comment/get")) {
 
             let res = commentGet(req);
-            return { result: res.result };
+            return { result: res.result, status: res.status };
 
         } else if (path.startsWith("/api/comment/post")) {
 
             let res = commentPost(req);
-            return { status: res.result };
+            return { status: res.status };
 
         }
     }

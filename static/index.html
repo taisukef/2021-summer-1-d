@@ -90,8 +90,10 @@
 						y: String(lng),
 						data: {comment: comment.value}
 					});
-					if(data.status == "error"){
-						alert("エラー");
+					if(data.status == "success") {
+						comment.value = "";
+					} else {
+						alert("エラーが発生しました");
 					}
 				} else {
 					alert("コメントを入力してください");
@@ -103,8 +105,9 @@
 
 		getComment = async function() {
 			const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
-			// console.log(data.result.data);
-			console.log(data);
+			if ( data.status == "success") {
+				console.log(data.result.data);
+			}
 		}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
