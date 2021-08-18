@@ -19,6 +19,7 @@
 		var service;
 		var infowindow;
 		let map;
+		let getComment;
 
 		function initMap() {
 			// 現在地を取得
@@ -74,6 +75,7 @@
 			google.maps.event.addListener(marker, "click", () => {
 				lat = place.geometry.location.lat();
 				lng = place.geometry.location.lng();
+				getComment();
 			});
 		}
 	</script>
@@ -98,6 +100,12 @@
 				alert("スポットを選択してください");
 			}
 		};
+
+		getComment = async function() {
+			const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
+			// console.log(data.result.data);
+			console.log(data);
+		}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
 
