@@ -3,6 +3,11 @@ import { UUID } from "https://js.sabae.cc/UUID.js";
 import { getExtension } from "https://js.sabae.cc/getExtension.js";
 import { parseURL } from "https://js.sabae.cc/parseURL.js";
 
+import {
+    getCookies,
+    setCookie,
+} from "https://deno.land/std@0.105.0/http/cookie.ts";
+
 const getFileNameFromDate = () => {
     const d = new Date();
     const fix0 = (n) => n < 10 ? "0" + n : n;
@@ -111,13 +116,17 @@ class Server {
                 return null;
             })();
             console.log("[req api]", json);
-            const res = await this.api(path, json, req.remoteAddr);
+            let resp = await this.api(path, json, req.remoteAddr, getCookies(req));
+            const res = resp[0];
+            if ( resp[1] ) setCookie(res, resp[1]);
+            console.log(resp[1]);
             console.log("[res api]", res);
             return new Response(JSON.stringify(res), {
                 status: 200,
                 headers: new Headers({
                     "Content-Type": "application/json; charset=utf-8",
                     "Access-Control-Allow-Origin": "*",
+                    "content-type": "text/plain",
                     "Access-Control-Allow-Headers": "Content-Type, Accept", // must
                     //"Access-Control-Allow-Methods": "PUT, DELETE, PATCH",
                 })
@@ -128,7 +137,7 @@ class Server {
         return null;
     };
     async handleData(req) {
-        //const url = req.url;
+        // const url = req.url;
         const path = req.path;
         try {
             if (req.method === "POST") {
@@ -283,7 +292,7 @@ class Server {
     }
 
     // Web API
-    async api(path, req, remoteAddr) { // to override
+    async api(path, req, remoteAddr, cookies) { // to override
         return req;
     }
 }
