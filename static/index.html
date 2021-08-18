@@ -16,8 +16,7 @@
 	</main>
 
 	<script>
-		var service;
-		var infowindow;
+		let service;
 		let map;
 		let getComment;
 
@@ -42,8 +41,17 @@
 						mapOptions
 					);
 
+					let style = [{
+						featureType: 'all',
+						elementType: 'labels',
+						stylers: [{ visibility: 'off' }]
+					}];
+					let lopanType = new google.maps.StyledMapType(style);
+					map.mapTypes.set('noText', lopanType);
+					map.setMapTypeId('noText');
+
 					//Places apiの仕様
-					var request = {
+					let request = {
 						location: Point,
 						radius: '1000',
 						type: ['restaurant', 'cafe', 'restaurant', 'aquarium', 'movie_theater', 'park', 'shopping_mall', 'stadium', 'zoo', 'train_station', 'tourist_attraction']
@@ -59,7 +67,7 @@
 		//apiを読込み後、マーカーの要素数分生成
 		function callback(results, status) {
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
-				for (var i = 0; i < results.length; i++) {
+				for (let i = 0; i < results.length; i++) {
 					createMarker(results[i]);
 				}
 			}
