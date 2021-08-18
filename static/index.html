@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+<body>
+	<main>
+		<div id="map" style="width:600px; height:400px"></div>
+		<h1>コメント投稿</h1>
+		<input id=comment>
+        <button id=btn class="ui button">投稿</button>
+	</main>
+
+	<script>
+		var service;
+		var infowindow;
+		let map;
+		let getComment;
+
+		function initMap() {
+			// 現在地を取得
+			navigator.geolocation.getCurrentPosition(
+				// 取得成功した場合
+				function(position) {
+					let posx = position.coords.latitude;
+					let posy = position.coords.longitude;
+					let Point = new google.maps.LatLng(posx, posy);
+
+					//マップオプション
+					let mapOptions = {
+						zoom: 15,
+						center: Point
+					};
+	
+					//マップ描画
+					map = new google.maps.Map(
+						document.getElementById("map"),
+						mapOptions
+					);
+
+					//Places apiの仕様
+					var request = {
+						location: Point,
+						radius: '1000',
+						type: ['restaurant', 'cafe', 'restaurant', 'aquarium', 'movie_theater', 'park', 'shopping_mall', 'stadium', 'zoo', 'train_station', 'tourist_attraction']
+					};
+
+					//Places api
+					service = new google.maps.places.PlacesService(map);
+					service.nearbySearch(request, callback);
+				}
+			);
+		}
+
+		//apiを読込み後、マーカーの要素数分生成
+		function callback(results, status) {
+			if (status == google.maps.places.PlacesServiceStatus.OK) {
+				for (var i = 0; i < results.length; i++) {
+					createMarker(results[i]);
+				}
+			}
+		}
+
+		//マーカーの生成
+		function createMarker(place) {
+			if (!place.geometry || !place.geometry.location) return;
+			const marker = new google.maps.Marker({
+				map,
+				position: place.geometry.location,
+			});
+			google.maps.event.addListener(marker, "click", () => {
+				lat = place.geometry.location.lat();
+				lng = place.geometry.location.lng();
+				getComment();
+			});
+		}
+	</script>
+
+	<script type="module">
+		import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
+		btn.onclick = async () => {
+			if ( typeof lat == "number" && typeof lng == "number" ) {
+				if( comment.value ) {
+					const data = await fetchJSON("api/comment/post", {
+						x: String(lat),
+						y: String(lng),
+						data: {comment: comment.value}
+					});
+					if(data.status == "success") {
+						comment.value = "";
+					} else {
+						alert("エラーが発生しました");
+					}
+				} else {
+					alert("コメントを入力してください");
+				}
+			} else {
+				alert("スポットを選択してください");
+			}
+		};
+
+		getComment = async function() {
+			const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
+			if ( data.status == "success") {
+				console.log(data.result.data);
+			}
+		}
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
+
+</body>
+</html>
