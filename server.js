@@ -1,4 +1,4 @@
-import { Server } from "https://js.sabae.cc/Server.js";
+import { Server } from "./server/savaeSaver.js";
 
 const db = [];
 
