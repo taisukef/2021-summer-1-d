@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="modal.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="overlay" class="overlay"></div>
+
+    <div class="modal-window">
+        <textarea class="textarea" rows="5" cols="40"></textarea>
+        <button class="js-close button-close">送信</button>
+    </div>
+
+    <button class="js-open button-open">モーダル</button>
+
+    <script>
+        $(function () {
+            $('.js-open').click(function () {
+                $('#overlay, .modal-window').fadeIn();
+            });
+
+            $('.js-close').click(function () {
+                $('#overlay, .modal-window').fadeOut();
+            });
+        });
+    </script>
+</body>
+</html>
