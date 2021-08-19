@@ -1,4 +1,4 @@
-import { Server } from "https://js.sabae.cc/Server.js";
+import { Server } from "./server/sabaeSaver.js";
 
 const db = [];
 
@@ -14,7 +14,7 @@ const commentGet = (req) => {
     return { result: { x: x, y: y, data: db[x][y] }, status: "success" };
 }
 
-const commentPost = (req) => {
+const commentPost = (req, cookies) => {
     let x = req.x;
     let y = req.y;
     if (!x || !y){
@@ -31,20 +31,27 @@ const commentPost = (req) => {
         db[x][y] = [];
     }
     db[x][y].push(req.data);
-    return { status: "success" };
+
+    if ( !cookies.exp ) {
+        cookies.exp = 0;
+    } else {
+        cookies.exp++;
+    }
+    return { status: "success", cookie: { name: "exp", value: String(cookies.exp), path: "/" }};
 }
 
 class MyServer extends Server {
-    api(path, req) {
+    api(path, req, addr, cookies) {
+
         if (path.startsWith("/api/comment/get")) {
 
             let res = commentGet(req);
-            return { result: res.result, status: res.status };
+            return [{ result: res.result, status: res.status }, null];
 
         } else if (path.startsWith("/api/comment/post")) {
 
-            let res = commentPost(req);
-            return { status: res.status };
+            let res = commentPost(req, cookies);
+            return [{ status: res.status }, res.cookie];
 
         }
     }
