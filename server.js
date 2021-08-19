@@ -32,13 +32,11 @@ const commentPost = (req, cookies) => {
     }
     db[x][y].push(req.data);
 
-    // console.log(cookie);
     if ( !cookies.exp ) {
         cookies.exp = 0;
     } else {
         cookies.exp++;
     }
-    // console.log(cookie);
     return { status: "success", cookie: { name: "exp", value: String(cookies.exp), path: "/" }};
 }
 
