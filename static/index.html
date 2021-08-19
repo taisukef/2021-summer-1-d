@@ -19,6 +19,8 @@
 		let service;
 		let map;
 		let getComment;
+		let lat;
+		let lng;
 
 		function initMap() {
 			// 現在地を取得
@@ -100,7 +102,9 @@
 					});
 					if(data.status == "success") {
 						comment.value = "";
-						console.log(document.cookie);
+						let cookies = getCookieArray();
+						let level = (Math.floor(cookies["exp"] / 5)) + 1;
+						console.log("lv: " + String(level));
 					} else {
 						alert("エラーが発生しました");
 					}
@@ -117,6 +121,18 @@
 			if ( data.status == "success") {
 				console.log(data.result.data);
 			}
+		}
+
+		function getCookieArray(){
+			let arr = [];
+			if(document.cookie != ''){
+				let cookies = document.cookie.split('; ');
+				for(let i = 0; i < cookies.length; i++){
+					let data = cookies[i].split('=');
+					arr[data[0]] = decodeURIComponent(data[1]);
+				}
+			}
+			return arr;
 		}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>

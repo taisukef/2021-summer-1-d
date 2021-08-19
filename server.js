@@ -39,7 +39,7 @@ const commentPost = (req, cookies) => {
         cookies.exp++;
     }
     // console.log(cookie);
-    return { status: "success", cookies: cookies};
+    return { status: "success", cookie: { name: "exp", value: String(cookies.exp), path: "/" }};
 }
 
 class MyServer extends Server {
@@ -53,7 +53,7 @@ class MyServer extends Server {
         } else if (path.startsWith("/api/comment/post")) {
 
             let res = commentPost(req, cookies);
-            return [{ status: res.status }, res.cookies];
+            return [{ status: res.status }, res.cookie];
 
         }
     }

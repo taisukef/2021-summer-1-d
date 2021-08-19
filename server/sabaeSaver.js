@@ -118,10 +118,9 @@ class Server {
             console.log("[req api]", json);
             let resp = await this.api(path, json, req.remoteAddr, getCookies(req));
             const res = resp[0];
-            if ( resp[1] ) setCookie(res, resp[1]);
-            console.log(resp[1]);
+            const cookie = resp[1];
             console.log("[res api]", res);
-            return new Response(JSON.stringify(res), {
+            let response =  new Response(JSON.stringify(res), {
                 status: 200,
                 headers: new Headers({
                     "Content-Type": "application/json; charset=utf-8",
@@ -131,6 +130,8 @@ class Server {
                     //"Access-Control-Allow-Methods": "PUT, DELETE, PATCH",
                 })
             });
+            if ( resp[1] ) setCookie(response, cookie);
+            return response;
         } catch (e) {
             console.log("err", e.stack);
         }
