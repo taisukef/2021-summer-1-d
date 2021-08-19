@@ -1,47 +1,265 @@
 <!DOCTYPE html>
-<html lang = "ja">
+<html lang="ja">
 <head>
-	<meta charset = "utf-8">
+	<meta charset="utf-8">
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-
-	<script>
-		function initMap() {
-    		// �?�?�?�?�?�?
-        	navigator.geolocation.getCurrentPosition(
-        		// �?�?�?�?�?�?�?�?
-        		function(position) {
-            		let x = position.coords.latitude;
-					let y = position.coords.longitude;
-					let Point = new google.maps.LatLng(x, y);
-
-					/*document.write(x);
-					document.write('<br>');
-					document.write(y);*/
-
-					let mapOptions = {
-              			zoom : 15,
-              			center : Point
-            		};
-
-            		let map = new google.maps.Map(
-            			document.getElementById("map"),
-            			mapOptions
-            		);
-          		}
-        	);
-    	}
-	</script>
 </head>
 <body>
+    <center>
+		<div id="overlay" class="overlay"></div>
+	<header>
+		<div style="background-color: #696969; width:100%; height:100%">
+		<br>
+		<h1 style="font-size: xxx-large; color: #ffffff;">title</h1>
+		<br>
+		</div>
+	</header>
 	<main>
-		<a href = "View.html">�?�?�?�?�?�?</a><br>
-		<a href = "Random.html">�?�?�?�?</a><br>
-		<a href = "Post.html">�?�?�?�?�?�?�?�?</a><br>
-		<div id="map" style="width:400px; height:300px"></div>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap"></script>
-	</main>
+        <p style="margin: 10em 0px;"></p>
+		<div style="float: right; width:20%; height:6em; background-color:#696969;">
+		<p style="text-align: left; color: #ffffff; margin: 1em">lat: <span id="lat"></span></p>
+		<p style="text-align: left; color: #ffffff; margin: 1em">lng: <span id="lng"></span></p>
+		</div><br>
+		<div id="map" style="width:80％; height:600px; clear:right;"></div>
+        <p style="margin: 3em 0px;"></p><hr>
+        <div id="text" style="width:50％; height:600px; position: center; background-color: #ffffff; display: none;" >
+		<p>spotname</p>
+		<ul id="cmt" style="text-align: center;">
+		</ul><hr>
+		
+
+
+        <div id =divname></div>
+    </div>
+
+<div class="modal-window">
+	<p>コメントを記入してください</p>
+	<textarea class="textarea" id="comment" rows="3" cols="20" placeholder="コメントを記入してください"></textarea>
+	<button id=btn class="js-close button-close">投稿</button>
+</div>
+</center>
+<button class="js-open button-open">投稿画面へ</button>
+</main>
+    
+		<script>
+			var service;
+    		var infowindow;
+			let map;
+
+			function initMap() {
+				// 現在地を取得
+				navigator.geolocation.getCurrentPosition(
+					// 取得成功した場合
+					function(position) {
+						let posx = position.coords.latitude;
+						let posy = position.coords.longitude;
+						let Point = new google.maps.LatLng(posx, posy);
+
+						//マップオプション
+						let mapOptions = {
+							  zoom: 16,
+							  center: Point
+						};
+	
+						//マップ描画
+						map = new google.maps.Map(
+							document.getElementById("map"),
+							mapOptions
+						);
+						let style = [{
+							featureType: 'all',
+							elementType: 'labels',
+							stylers: [{ visibility: 'off' }]
+						}];
+						let lopanType = new google.maps.StyledMapType(style);
+						map.mapTypes.set('noText', lopanType);
+						map.setMapTypeId('noText');
+                        				// クリックイベントを追加
+						map.addListener('click', function(e) {
+                			getClickLatLng(e.latLng, map);
+                            const text = document.getElementById("text");
+
+	                    if(text.style.display=="block"){
+		                    // noneで非表示
+		                    text.style.display ="none";
+	                    }else{
+		                    //blockで表示
+		                text.style.display ="block";
+	                    }
+            			});
+
+						//Places apiの仕様
+						var request = {
+            				location: Point,
+            				radius: '1000',
+            				type: ['restaurant', 'cafe', 'restaurant', 'aquarium', 'movie_theater', 'park', 'shopping_mall', 'stadium', 'zoo', 'train_station', 'tourist_attraction']
+        				};
+
+						//Places api
+        				service = new google.maps.places.PlacesService(map);
+        				service.nearbySearch(request, callback);
+					}
+				);
+			}
+
+			//apiを読込み後、マーカーの要素数分生成
+			function callback(results, status) {
+        		if (status == google.maps.places.PlacesServiceStatus.OK) {
+            		for (var i = 0; i < results.length; i++) {
+                		createMarker(results[i]);
+            		}
+        		}
+    		}
+
+			//マーカーの生成
+			function createMarker(place) {
+        		if (!place.geometry || !place.geometry.location) return;
+        		const marker = new google.maps.Marker({
+            		map,
+            		position: place.geometry.location,
+        		});
+        		google.maps.event.addListener(marker, "click", () => {
+            		console.log(place.name);
+            		console.log(place.geometry.location.lat());
+                    });
+    		}
+
+			function getClickLatLng(lat_lng, map) {
+
+				lat = lat_lng.lat();
+				lng = lat_lng.lng();
+
+				// 座標を表示
+				document.getElementById('lat').textContent = lat;
+				document.getElementById('lng').textContent = lng;
+
+				// マーカーを設置
+				new google.maps.Marker({
+					position: lat_lng,
+					map: map
+				});
+			}
+			$(function () {
+				$('.js-open').click(function () {
+					const text = document.getElementById("text");
+					if(text.style.display=="none"){
+						alert("スポットが選ばれていません。もう一度選択してください。")
+					}else{	
+					$('#overlay, .modal-window').fadeIn();
+				}});
+
+				$('.js-close').click(function () {
+					$('#overlay, .modal-window').fadeOut();
+				});
+			});
+
+			var country = ['good', 'good', 'bad', 'bad', 'bad'];
+
+			// ul要素を取得
+			var ul = document.getElementById('cmt');
+
+				// ul要素にli要素を追加
+			for (var count = 0; count < country.length; count++) {
+				// li要素を作成
+			var li = document.createElement('li');
+
+				// テキスト情報を作成
+			var text = document.createTextNode(country[count]);
+
+				// ul要素に追加
+			li.appendChild(text);
+			ul.appendChild(li);
+			}
+		</script>
+		
+<script type="module">
+    import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
+    btn.onclick = async () => {
+        if ( typeof lat == "number" && typeof lng == "number" ) {
+            if( comment.value ) {
+                const data = await fetchJSON("api/comment/post", {
+                    x: String(lat),
+                    y: String(lng),
+                    data: {comment: comment.value}
+                });
+                if(data.status == "success") {
+                    comment.value = "";
+                } else {
+                    alert("エラーが発生しました");
+                }
+            } else {
+                alert("コメントを入力してください");
+            }
+        } else {
+            alert("スポットを選択してください");
+        }
+    };
+
+    getComment = async function() {
+        const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
+        if ( data.status == "success") {
+            console.log(data.result.data);
+        }
+    }
+   
+</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
+
+		<style>
+			.button-open {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    display: block;
+    width: 100px;
+    height: 100px;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+  
+.modal-window {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 200px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    z-index: 11;
+    padding: 2rem;
+}
+  
+
+.button-close {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    padding: 1em;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 20rem;
+    cursor: pointer;
+}
+  
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+</style>
 </body>
 </html>
