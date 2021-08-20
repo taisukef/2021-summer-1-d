@@ -6,62 +6,122 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 </head>
 <body>
     <center>
 		<div id="overlay" class="overlay"></div>
 	<header>
-		<div style="background-color: #696969; width:100%; height:100%">
-		<br>
-		<h1 style="font-size: xxx-large; color: #ffffff;">title</h1>
-		<br>
+		<div style="background-color: #ffffff; width:100%; height:270px"><br><br>
+		<img src="../logo1.png" style="width: 50%; height: 65%;"><br>
+		<p style="text-align: right; font-size: xx-large; color: #000;"　>Lv<span id="yourlevel" style="color: red;"></span>　　</p>
 		</div>
 	</header>
 	<main>
-        <p style="margin: 10em 0px;"></p>
-		<div style="float: right; width:20%; height:6em; background-color:#696969;">
-		<p style="text-align: left; color: #ffffff; margin: 1em">lat: <span id="lat"></span></p>
-		<p style="text-align: left; color: #ffffff; margin: 1em">lng: <span id="lng"></span></p>
-		</div><br>
-		<div id="map" style="width:80％; height:600px; clear:right;"></div>
+    
+		<div id="map" style="width:80％; height:1000px; clear:right;"></div>
         <p style="margin: 3em 0px;"></p><hr>
-        <div id="text" style="width:50％; height:600px; position: center; background-color: #ffffff; display: none;" >
-		<p>spotname</p>
-		<ul id="cmt" style="text-align: center;">
-		</ul><hr>
-		
-
-
-        <div id =divname></div>
+        <div style="width: 400px;; height:800px; position: center; background-color: #ffffff; overflow: scroll;">
+		<div style()>
+		<h2 style="background-color: #696969; font-size: xxx-large; color: #ffffff;">コメント</h2>
+		<div id="spot" style="width: 400px;; height:1000px; position: center; background-color: #ffffff; display: none;">
+		<ul id="comment-parent" style="text-align: center; background-color: #c0c0c0;"></ul>
+		<hr>
+        </div>
     </div>
+	<div class="modal fade" id="spot-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-fluid" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalTitle">スポット絞り込み</h5>
+					<button type="button" class="close btn spot-modal-close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="margin: 15px">
+					<form name="spots">
+						<input type="checkbox" name="spot" value="restaurant" checked>レストラン,
+						<input type="checkbox" name="spot" value="cafe" checked>カフェ,
+						<input type="checkbox" name="spot" value="aquarium" checked>水族館,
+						<input type="checkbox" name="spot" value="movie_theater" checked>映画館,
+						<input type="checkbox" name="spot" value="park" checked>公園,<br>
+						<input type="checkbox" name="spot" value="shopping_mall" checked>ショッピングモール,
+						<input type="checkbox" name="spot" value="stadium" checked>スタジアム,
+						<input type="checkbox" name="spot" value="zoo" checked>動物園,
+						<input type="checkbox" name="spot" value="train_station" checked>駅,
+						<input type="checkbox" name="spot" value="tourist_attraction" checked>観光名所<br>
+					</form>                    </div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary spot-modal-close" data-dismiss="modal">Close</button>
+					<button type="button" id="spot-btn" class="btn btn-primary spot-modal-close" onclick="initMap()">絞り込む</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<div class="modal-window">
-	<p>コメントを記入してください</p>
-	<textarea class="textarea" id="comment" rows="3" cols="20" placeholder="コメントを記入してください"></textarea>
-	<button id=btn class="js-close button-close">投稿</button>
-</div>
+
+	<div class="modal fade" id="comment-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-fluid" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">コメント</h5>
+					<button id="comment-modal-close2" type="button" class="close btn comment-modal-close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="margin: 15px">
+					<textarea class="textarea form-control" id="cmt" rows="10" cols="50" placeholder="コメントを記入してください"></textarea>
+				</div>
+				<div class="modal-footer">
+					<button id="comment-modal-close" type="button" class="btn btn-secondary comment-modal-close" data-dismiss="modal">閉じる</button>
+					<button type="button" id="btn" class="btn btn-primary comment-modal-close">投稿</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </center>
-<button class="js-open button-open">投稿画面へ</button>
+<button id="js-open1" class="button-open1">スポット選択</button>
+<button id="js-open2" class="button-open2">投稿画面へ</button>
 </main>
     
 		<script>
-			var service;
-    		var infowindow;
-			let map;
+		let service;
+		let map;
+		let getComment;
+		let lat;
+		let lng;
+		let markerList = [];
+		let showLevel;
+		   
+
+			function getValue() {
+				let spotsArr = new Array();
+				let spot = document.spots.spot;
+
+				for (let i = 0; i < spot.length; i++) {
+					if(spot[i].checked) {
+						spotsArr.push(spot[i].value);
+					}
+				}
+				return spotsArr;
+			}	
 
 			function initMap() {
+				
 				// 現在地を取得
 				navigator.geolocation.getCurrentPosition(
 					// 取得成功した場合
 					function(position) {
+						let spotsArr = getValue();
 						let posx = position.coords.latitude;
 						let posy = position.coords.longitude;
 						let Point = new google.maps.LatLng(posx, posy);
 
 						//マップオプション
 						let mapOptions = {
-							  zoom: 16,
-							  center: Point
+							zoom: 16,
+							center: Point,
+							mapTypeControl: false,
 						};
 	
 						//マップ描画
@@ -77,30 +137,19 @@
 						let lopanType = new google.maps.StyledMapType(style);
 						map.mapTypes.set('noText', lopanType);
 						map.setMapTypeId('noText');
-                        				// クリックイベントを追加
-						map.addListener('click', function(e) {
-                			getClickLatLng(e.latLng, map);
-                            const text = document.getElementById("text");
-
-	                    if(text.style.display=="block"){
-		                    // noneで非表示
-		                    text.style.display ="none";
-	                    }else{
-		                    //blockで表示
-		                text.style.display ="block";
-	                    }
-            			});
 
 						//Places apiの仕様
-						var request = {
-            				location: Point,
-            				radius: '1000',
-            				type: ['restaurant', 'cafe', 'restaurant', 'aquarium', 'movie_theater', 'park', 'shopping_mall', 'stadium', 'zoo', 'train_station', 'tourist_attraction']
-        				};
-
+						let request = {
+							location: Point,
+							radius: '500',
+							types: spotsArr
+					};
 						//Places api
         				service = new google.maps.places.PlacesService(map);
         				service.nearbySearch(request, callback);
+						// 現在地を取得
+						showLevel();
+				
 					}
 				);
 			}
@@ -113,80 +162,57 @@
             		}
         		}
     		}
-
+			
 			//マーカーの生成
+			
 			function createMarker(place) {
-        		if (!place.geometry || !place.geometry.location) return;
-        		const marker = new google.maps.Marker({
-            		map,
-            		position: place.geometry.location,
-        		});
-        		google.maps.event.addListener(marker, "click", () => {
-            		console.log(place.name);
-            		console.log(place.geometry.location.lat());
-                    });
-    		}
-
-			function getClickLatLng(lat_lng, map) {
-
-				lat = lat_lng.lat();
-				lng = lat_lng.lng();
-
-				// 座標を表示
-				document.getElementById('lat').textContent = lat;
-				document.getElementById('lng').textContent = lng;
-
-				// マーカーを設置
-				new google.maps.Marker({
-					position: lat_lng,
-					map: map
-				});
-			}
-			$(function () {
-				$('.js-open').click(function () {
-					const text = document.getElementById("text");
-					if(text.style.display=="none"){
-						alert("スポットが選ばれていません。もう一度選択してください。")
-					}else{	
-					$('#overlay, .modal-window').fadeIn();
-				}});
-
-				$('.js-close').click(function () {
-					$('#overlay, .modal-window').fadeOut();
-				});
+			if (!place.geometry || !place.geometry.location) return;
+			const marker = new google.maps.Marker({
+				map,
+				position: place.geometry.location,
+				icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
 			});
+			markerList.push(marker);
+			google.maps.event.addListener(marker, "click", () => {
+				resetMarker();
+				resetComment();
+				lat = place.geometry.location.lat();
+				lng = place.geometry.location.lng();
+				marker.setIcon('https://mts.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=1')
+				getComment();
+				spot.style.display="block";
+			});
+		}
 
-			var country = ['good', 'good', 'bad', 'bad', 'bad'];
-
-			// ul要素を取得
-			var ul = document.getElementById('cmt');
-
-				// ul要素にli要素を追加
-			for (var count = 0; count < country.length; count++) {
-				// li要素を作成
-			var li = document.createElement('li');
-
-				// テキスト情報を作成
-			var text = document.createTextNode(country[count]);
-
-				// ul要素に追加
-			li.appendChild(text);
-			ul.appendChild(li);
+		function resetMarker() {
+			for (let marker of markerList) {
+				marker.setIcon('https://maps.google.com/mapfiles/ms/icons/blue-dot.png');
 			}
+		}
+		function resetComment() {
+        const comments = document.getElementById('comment-parent');
+        while (comments.firstChild) {
+            comments.removeChild(comments.firstChild);
+        }
+    }
 		</script>
 		
 <script type="module">
+	
     import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
     btn.onclick = async () => {
         if ( typeof lat == "number" && typeof lng == "number" ) {
-            if( comment.value ) {
+            if( cmt.value ) {
                 const data = await fetchJSON("api/comment/post", {
                     x: String(lat),
                     y: String(lng),
-                    data: {comment: comment.value}
+                    data: {comment: cmt.value}
                 });
                 if(data.status == "success") {
-                    comment.value = "";
+                    cmt.value = "";
+					alert("投稿完了");
+					resetlevel();
+					showLevel();
                 } else {
                     alert("エラーが発生しました");
                 }
@@ -197,58 +223,106 @@
             alert("スポットを選択してください");
         }
     };
+	
+	$(function () {
+    $('#js-open2').click(function(){
+        if ( typeof lat == "number" && typeof lng == "number" ) {
+            $('#comment-modal').modal('show');
+        } else {
+            alert("スポットを選択してください");
+        }
+    });
 
+    $(".comment-modal-close").click(function(){
+        $('#comment-modal').modal('hide');
+    });
+
+    $('#js-open1').click(function(){
+        $('#spot-modal').modal('show');
+    });
+
+    $(".spot-modal-close").click(function(){
+        $('#spot-modal').modal('hide');
+    });
+});
+	
+		
     getComment = async function() {
         const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
         if ( data.status == "success") {
             console.log(data.result.data);
+			let comments = document.getElementById('comment-parent');
+				for (let resultData of data.result.data) {
+					let text = document.createTextNode(resultData.comment);
+					const hr = document.createElement('hr');
+					const p = document.createElement('p');
+					p.appendChild(text);
+					comments.appendChild(text);
+					comments.appendChild(p);
+					comments.appendChild(hr);
+				}
+			}
+        }
+	function getCookieArray(){
+			let arr = [];
+			if(document.cookie != ''){
+				let cookies = document.cookie.split('; ');
+				for(let i = 0; i < cookies.length; i++){
+					let data = cookies[i].split('=');
+					arr[data[0]] = decodeURIComponent(data[1]);
+				}
+			}
+			return arr;
+		}
+
+		showLevel = function() {
+    let cookies = getCookieArray();
+    let exp = cookies["exp"];
+    let level = (Math.floor(exp / 10)) + 1;
+    let lv = document.getElementById("yourlevel");
+    lv.innerHTML = level;
+}
+	function resetlevel() {
+        const yourlv = document.getElementById('yourlevel');
+        while (yourlv.firstChild) {
+            yourlv.removeChild(yourlv.firstChild);
         }
     }
-   
 </script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 		<style>
-			.button-open {
+
+.modal-dialog-fluid {
+    max-width: inherit;
+    width: 90%;
+}
+
+	.button-open1 {
     position: absolute;
-    right: 0px;
-    bottom: 0px;
+    right: 10px;
+    bottom: 300px;
     display: block;
-    width: 100px;
-    height: 100px;
+    width: 250px;
+    height: 250px;
     background-color: #000000;
     color: #ffffff;
     border-radius: 50%;
     cursor: pointer;
 }
-  
-.modal-window {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 200px;
-    background-color: #ffffff;
-    border-radius: 5px;
-    z-index: 11;
-    padding: 2rem;
-}
-  
-
-.button-close {
+.button-open2 {
     position: absolute;
-    top: 80%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    padding: 1em;
+    right: 10px;
+    bottom: 10px;
+    display: block;
+    width: 250px;
+    height: 250px;
     background-color: #000000;
     color: #ffffff;
-    border-radius: 20rem;
+    border-radius: 50%;
     cursor: pointer;
 }
+	
   
 .overlay {
     display: none;
