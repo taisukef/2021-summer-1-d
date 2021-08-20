@@ -27,7 +27,7 @@
 		<div id="map" style="width:100%; height:1000px; clear:right;"></div>
         <div style="width: 650px;; height:800px; margin: 20px; background-color: #ffffff; overflow: scroll; ">
 		<h2 style="background-color: #696969; font-size: 60px; color: #ffffff; text-align: center;">コメント</h2>
-		<div id="spot" style="width: 600px;; height:800px; position: center; background-color: #ffffff; display: none;">
+		<div id="spot" style="width: 650px;; height:800px; position: center; background-color: #ffffff; display: none;">
 		<ul id="comment-parent" style="text-align: center; background-color: #c0c0c0;"></ul>
 		<hr>
         </div>
@@ -276,7 +276,7 @@
 					resultData.comment = resultData.comment.replace(/\n/g, '<br>');
 					const hr = document.createElement('hr');
 					const p = document.createElement('p');
-					p.style.fontSize = "20px";
+					p.style.fontSize = "50px";
 					p.innerHTML = resultData.comment;
 					comments.appendChild(p);
 					comments.appendChild(hr);
