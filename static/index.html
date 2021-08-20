@@ -96,7 +96,7 @@
 
 		showLevel = function() {
 			let cookies = getCookieArray();
-			let exp = cookies["exp"];
+			let exp = cookies["exp"] ? cookies["exp"] : 0;
 			let level = (Math.floor(exp / 10)) + 1;
 			let lv = document.getElementById("yourlevel");
 			lv.innerHTML = level;
