@@ -271,7 +271,6 @@
     getComment = async function() {
         const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
         if ( data.status == "success") {
-            console.log(data.result.data);
 			let comments = document.getElementById('comment-parent');
 				for (let resultData of data.result.data) {
 					let text = document.createTextNode(resultData.comment);
