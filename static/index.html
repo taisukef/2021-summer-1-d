@@ -273,11 +273,11 @@
         if ( data.status == "success") {
 			let comments = document.getElementById('comment-parent');
 				for (let resultData of data.result.data) {
-					let text = document.createTextNode(resultData.comment);
+					resultData.comment = resultData.comment.replace(/\n/g, '<br>');
 					const hr = document.createElement('hr');
 					const p = document.createElement('p');
-					p.appendChild(text);
-					comments.appendChild(text);
+					p.style.fontSize = "20px";
+					p.innerHTML = resultData.comment;
 					comments.appendChild(p);
 					comments.appendChild(hr);
 				}
