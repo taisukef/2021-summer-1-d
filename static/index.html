@@ -85,7 +85,7 @@
 <button id="js-open2" class="button-open2">投稿画面へ</button>
 </main>
     
-		<script>
+	<script>
 		let service;
 		let map;
 		let getComment;
@@ -93,7 +93,26 @@
 		let lng;
 		let markerList = [];
 		let showLevel;
-		   
+
+		showLevel = function() {
+			let cookies = getCookieArray();
+			let exp = cookies["exp"];
+			let level = (Math.floor(exp / 10)) + 1;
+			let lv = document.getElementById("yourlevel");
+			lv.innerHTML = level;
+		}
+
+		function getCookieArray(){
+			let arr = [];
+			if(document.cookie != ''){
+				let cookies = document.cookie.split('; ');
+				for(let i = 0; i < cookies.length; i++){
+					let data = cookies[i].split('=');
+					arr[data[0]] = decodeURIComponent(data[1]);
+				}
+			}
+			return arr;
+		}
 
 			function getValue() {
 				let spotsArr = new Array();
@@ -264,25 +283,7 @@
 				}
 			}
         }
-	function getCookieArray(){
-			let arr = [];
-			if(document.cookie != ''){
-				let cookies = document.cookie.split('; ');
-				for(let i = 0; i < cookies.length; i++){
-					let data = cookies[i].split('=');
-					arr[data[0]] = decodeURIComponent(data[1]);
-				}
-			}
-			return arr;
-		}
 
-		showLevel = function() {
-    let cookies = getCookieArray();
-    let exp = cookies["exp"];
-    let level = (Math.floor(exp / 10)) + 1;
-    let lv = document.getElementById("yourlevel");
-    lv.innerHTML = level;
-}
 	function resetlevel() {
         const yourlv = document.getElementById('yourlevel');
         while (yourlv.firstChild) {
