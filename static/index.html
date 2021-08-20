@@ -28,11 +28,11 @@
         <div style="width: 650px;; height:800px; margin: 20px; background-color: #ffffff; overflow: scroll; ">
 		<h2 style="background-color: #696969; font-size: 60px; color: #ffffff; text-align: center;">コメント</h2>
 		<div id="spot" style="width: 650px;; height:800px; position: center; background-color: #ffffff; display: none;">
-		<ul id="comment-parent" style="text-align: center; background-color: #c0c0c0;"></ul>
+		<ul id="comment-parent" style="background-color: #f5f5f5;"></ul>
 		<hr>
         </div>
     </div>
-	<div class="modal fade" id="spot-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal fade" id="spot-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="font-size: 30px;">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-fluid" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -90,6 +90,7 @@
 		let service;
 		let map;
 		let getComment;
+		let resetComment;
 		let lat;
 		let lng;
 		let markerList = [];
@@ -210,10 +211,10 @@
 				marker.setIcon('https://maps.google.com/mapfiles/ms/icons/blue-dot.png');
 			}
 		}
-		function resetComment() {
-        const comments = document.getElementById('comment-parent');
-        while (comments.firstChild) {
-            comments.removeChild(comments.firstChild);
+		resetComment = function() {
+			const comments = document.getElementById('comment-parent');
+			while (comments.firstChild) {
+				comments.removeChild(comments.firstChild);
         }
     }
 		</script>
@@ -234,6 +235,8 @@
 					alert("投稿完了");
 					resetlevel();
 					showLevel();
+					resetComment();
+					getComment();
                 } else {
                     alert("エラーが発生しました");
                 }
