@@ -9,6 +9,8 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 	<link rel="icon" href="./favicon.ico" id="favicon">
 	<link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+	<!-- map-view -->
+	<script type="module" src="https://code4fukui.github.io/map-view/map-view.js"></script>
 	<title>MOMENTPACK</title>
 </head>
 <body>
@@ -24,14 +26,19 @@
 	</header>
 	<main>
     
-		<div id="map" style="width:100%; height:1000px; clear:right;"></div>
-        <div style="width: 650px;; height:800px; margin: 20px; background-color: #ffffff; overflow: scroll; ">
-		<h2 style="background-color: #696969; font-size: 60px; color: #ffffff; text-align: center;">コメント</h2>
-		<div id="spot" style="width: 650px;; height:800px; position: center; background-color: #ffffff; display: none;">
-		<ul id="comment-parent" style="background-color: #f5f5f5;"></ul>
-		<hr>
-        </div>
+		<map-view id="mapview" latlng="35.944571,136.186228" zoom="10" style="width:100%; height:1000px; clear:right;"></map-view>
+
+		<button id="js-open1" class="button-open1"><i class="fas fa-search fa-5x" ></i></button>
+		<button id="js-open2" class="button-open2"><i class="far fa-comment-dots fa-5x" ></i></button>
+
+		<div style="width: 650px;; height:800px; margin: 20px; background-color: #ffffff; overflow: scroll; ">
+			<h2 style="background-color: #696969; font-size: 60px; color: #ffffff; text-align: center;">コメント</h2>
+			<div id="spot" style="width: 650px;; height:800px; position: center; background-color: #ffffff; display: none;">
+				<ul id="comment-parent" style="background-color: #f5f5f5;"></ul>
+				<hr>
+			</div>
     </div>
+
 	<div class="modal fade" id="spot-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="font-size: 30px;">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-fluid" role="document">
 			<div class="modal-content">
@@ -56,7 +63,7 @@
 					</form>                    </div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary spot-modal-close" data-dismiss="modal" style="font-size: 30px; margin-right: 20px;">閉じる</button>
-					<button type="button" id="spot-btn" class="btn btn-primary spot-modal-close" onclick="initMap()" style="font-size: 30px;">絞り込む</button>
+					<button type="button" id="spot_btn" class="btn btn-primary spot-modal-close" style="font-size: 30px;">絞り込む</button>
 				</div>
 			</div>
 		</div>
@@ -82,262 +89,53 @@
 			</div>
 		</div>
 	</div>
-<button id="js-open1" class="button-open1"><i class="fas fa-search fa-5x" ></i></button>
-<button id="js-open2" class="button-open2"><i class="far fa-comment-dots fa-5x" ></i></button>
 </main>
-    
-		<script>
-		let service;
-		let map;
-		let getComment;
-		let resetComment;
-		let lat;
-		let lng;
-		let markerList = [];
-		let showLevel;
-		   
-		showLevel = function() {
-			let cookies = getCookieArray();
-			let exp = cookies["exp"] ? cookies["exp"] : 0;
-			let level = (Math.floor(exp / 10)) + 1;
-			let lv = document.getElementById("yourlevel");
-			lv.innerHTML = level;
-		}
-
-		function getCookieArray(){
-			let arr = [];
-			if(document.cookie != ''){
-				let cookies = document.cookie.split('; ');
-				for(let i = 0; i < cookies.length; i++){
-					let data = cookies[i].split('=');
-					arr[data[0]] = decodeURIComponent(data[1]);
-				}
-			}
-			return arr;
-		}
-			
-			function getValue() {
-				let spotsArr = new Array();
-				let spot = document.spots.spot;
-
-				for (let i = 0; i < spot.length; i++) {
-					if(spot[i].checked) {
-						spotsArr.push(spot[i].value);
-					}
-				}
-				return spotsArr;
-			}	
-
-			function initMap() {
-				
-				// 現在地を取得
-				navigator.geolocation.getCurrentPosition(
-					// 取得成功した場合
-					function(position) {
-						let spotsArr = getValue();
-						let posx = position.coords.latitude;
-						let posy = position.coords.longitude;
-						let Point = new google.maps.LatLng(posx, posy);
-
-						//マップオプション
-						let mapOptions = {
-							zoom: 16,
-							center: Point,
-							mapTypeControl: false,
-						};
-	
-						//マップ描画
-						map = new google.maps.Map(
-							document.getElementById("map"),
-							mapOptions
-						);
-						let style = [{
-							featureType: 'all',
-							elementType: 'labels',
-							stylers: [{ visibility: 'off' }]
-						}];
-						let lopanType = new google.maps.StyledMapType(style);
-						map.mapTypes.set('noText', lopanType);
-						map.setMapTypeId('noText');
-
-						//Places apiの仕様
-						let request = {
-							location: Point,
-							radius: '500',
-							types: spotsArr
-					};
-						//Places api
-        				service = new google.maps.places.PlacesService(map);
-        				service.nearbySearch(request, callback);
-						// 現在地を取得
-						showLevel();
-				
-					}
-				);
-			}
-
-			//apiを読込み後、マーカーの要素数分生成
-			function callback(results, status) {
-        		if (status == google.maps.places.PlacesServiceStatus.OK) {
-            		for (var i = 0; i < results.length; i++) {
-                		createMarker(results[i]);
-            		}
-        		}
-    		}
-			
-			//マーカーの生成
-			
-			function createMarker(place) {
-			if (!place.geometry || !place.geometry.location) return;
-			const marker = new google.maps.Marker({
-				map,
-				position: place.geometry.location,
-				icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-			});
-			markerList.push(marker);
-			google.maps.event.addListener(marker, "click", () => {
-				resetMarker();
-				resetComment();
-				lat = place.geometry.location.lat();
-				lng = place.geometry.location.lng();
-				marker.setIcon('https://mts.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=1')
-				getComment();
-				spot.style.display="block";
-			});
-		}
-
-		function resetMarker() {
-			for (let marker of markerList) {
-				marker.setIcon('https://maps.google.com/mapfiles/ms/icons/blue-dot.png');
-			}
-		}
-		resetComment = function() {
-			const comments = document.getElementById('comment-parent');
-			while (comments.firstChild) {
-				comments.removeChild(comments.firstChild);
-        }
-    }
-		</script>
-		
-<script type="module">
-	
-    import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
-    btn.onclick = async () => {
-        if ( typeof lat == "number" && typeof lng == "number" ) {
-            if( cmt.value ) {
-                const data = await fetchJSON("api/comment/post", {
-                    x: String(lat),
-                    y: String(lng),
-                    data: {comment: cmt.value}
-                });
-                if(data.status == "success") {
-                    cmt.value = "";
-					alert("投稿完了");
-					resetlevel();
-					showLevel();
-					resetComment();
-					getComment();
-                } else {
-                    alert("エラーが発生しました");
-                }
-            } else {
-                alert("コメントを入力してください");
-            }
-        } else {
-            alert("スポットを選択してください");
-        }
-    };
-	
-	$(function () {
-    $('#js-open2').click(function(){
-        if ( typeof lat == "number" && typeof lng == "number" ) {
-            $('#comment-modal').modal('show');
-        } else {
-            alert("スポットを選択してください");
-        }
-    });
-
-    $(".comment-modal-close").click(function(){
-        $('#comment-modal').modal('hide');
-    });
-
-    $('#js-open1').click(function(){
-        $('#spot-modal').modal('show');
-    });
-
-    $(".spot-modal-close").click(function(){
-        $('#spot-modal').modal('hide');
-    });
-});
-	
-		
-    getComment = async function() {
-        const data = await fetchJSON("api/comment/get", { x: String(lat), y: String(lng)});
-        if ( data.status == "success") {
-			let comments = document.getElementById('comment-parent');
-				for (let resultData of data.result.data) {
-					resultData.comment = resultData.comment.replace(/\n/g, '<br>');
-					const hr = document.createElement('hr');
-					const p = document.createElement('p');
-					p.style.fontSize = "50px";
-					p.innerHTML = resultData.comment;
-					comments.appendChild(p);
-					comments.appendChild(hr);
-				}
-			}
-        }
-	
-		function resetlevel() {
-        const yourlv = document.getElementById('yourlevel');
-        while (yourlv.firstChild) {
-            yourlv.removeChild(yourlv.firstChild);
-        }
-    }
-</script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu8WH_gESz6U50rwSe7x4AyUDmJiDF9nk&callback=initMap&sensor=true&libraries=places"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-		<style>
+<script type="module" src="client.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<style>
 
 .modal-dialog-fluid {
-    max-width: inherit;
-    width: 90%;
+	max-width: inherit;
+	width: 90%;
 }
 
-	.button-open1 {
-    position: absolute;
-    right: 50px;
-    bottom: 250px;
-    display: block;
-    width: 200px;
-    height: 200px;
-    background-color: #000000;
-    color: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
+.button-open1 {
+	x-position: relative;
+	x-right: 50px;
+	x-bottom: 250px;
+	float: right;
+	display: block;
+	width: 200px;
+	height: 200px;
+	background-color: #000000;
+	color: #ffffff;
+	border-radius: 50%;
+	cursor: pointer;
 }
 .button-open2 {
-    position: absolute;
-    right: 50px;
-    bottom: 20px;
-    display: block;
-    width: 200px;
-    height: 200px;
-    background-color: #000000;
-    color: #ffffff;
-    border-radius: 50%;
-    cursor: pointer;
+	x-position: absolute;
+	x-right: 50px;
+	x-bottom: 20px;
+	float: right;
+	clear: both;
+	display: block;
+	width: 200px;
+	height: 200px;
+	background-color: #000000;
+	color: #ffffff;
+	border-radius: 50%;
+	cursor: pointer;
 }
-	
   
 .overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100%;
-    height: 100%;
-    z-index: 10;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	width: 100%;
+	height: 100%;
+	z-index: 10;
 }
 
 #comment-parent {
